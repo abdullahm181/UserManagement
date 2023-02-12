@@ -1,0 +1,126 @@
+﻿@{
+    Layout = null;
+}
+<div class="addselection">
+    <div class="row">
+        <div class="col">
+            <form id="MenuCRUD" method="POST" action="javascript:void(0);">
+                @if (@ViewBag.Data != null)
+                {
+                    <div class="text-danger"></div>
+                    <input type="hidden" name="ID" value="@ViewBag.Data.ID" />
+
+
+                    <div class="form-group">
+                        <label class="control-label">Menu Name :</label>
+                        <input class="form-control" name="MENU_NAME" value="@ViewBag.Data.MENU_NAME" />
+
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">Group</label>
+                        <input class="form-control" name="GROUP" value="@ViewBag.Data.GROUP" />
+
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">Controller</label>
+                        <input class="form-control" name="MENU_CONTROLLER" value="@ViewBag.Data.MENU_CONTROLLER" />
+
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">View</label>
+                        <input class="form-control" name="MENU_VIEW" value="@ViewBag.Data.MENU_VIEW" />
+
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">Icon</label>
+                        <input class="form-control" name="MENU_ICON" value="@ViewBag.Data.MENU_ICON" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Order</label>
+                        <input type="number" class="form-control" name="MENU_ORDER" value="@ViewBag.Data.MENU_ORDER" />
+                    </div>
+
+                }
+                else
+                {
+                    <div class="text-danger"></div>
+                    <input type="hidden" name="ID" value="" />
+                    <div class="form-group">
+                        <label class="control-label">Menu Name :</label>
+                        <input class="form-control" name="MENU_NAME" />
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Group</label>
+                        <input class="form-control" name="GROUP" value="" />
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Controller</label>
+                        <input class="form-control" name="MENU_CONTROLLER" value="" />
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">View</label>
+                        <input class="form-control" name="MENU_VIEW" value="" />
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Icon</label>
+                        <input class="form-control" name="MENU_ICON" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Order</label>
+                        <input type="number" class="form-control" name="MENU_ORDER" value="" />
+                    </div>
+
+                }
+
+                <div class="form-group my-2">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import KanbanAPI from "../../js/Kanban/api/KanbanApi.js";
+    $("#MenuCRUD").on("submit", async function (event) {
+        var data = {};
+        //data["Id"] = 0;
+        $('#MenuCRUD').serializeArray().map(function (x) { data[x.name] = x.value; });
+        data["ID"] = parseInt(data["ID"]);
+        console.log(data);
+
+        KanbanAPI.Methode("POST", "Menu/ProcesCRUD", data, function (d) {
+            console.log(d);
+            if (d.result > 0) {
+                document.getElementById("MenuCRUD").reset();
+                Swal.fire(
+                    'Success!',
+                    d.message,
+                    'success'
+                );
+                $(`#tMenu`).DataTable().ajax.reload();
+                $('#ModalData').modal('hide');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: d.result,
+                    text: d.message,
+                });
+            }
+        });
+        event.preventDefault();
+
+    });
+</script>

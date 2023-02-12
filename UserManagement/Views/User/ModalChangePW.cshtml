@@ -1,0 +1,78 @@
+﻿@{
+    Layout = null;
+}
+<div class="addselection">
+    <div class="row">
+        <div class="col">
+            <form id="UserChangePas" method="POST" action="javascript:void(0);">
+                @if (@ViewBag.Data != null)
+                {
+                    <div class="text-danger"></div>
+                    <input type="hidden" name="ID" value="@ViewBag.Data.ID" />
+
+
+                    <div class="form-group d-none">
+                        <label class="control-label">Nama User :</label>
+                        <input class="form-control" name="NAMA_USER" value="@ViewBag.Data.NAMA_USER" />
+
+                    </div>
+
+
+                    <div class="form-group d-none">
+                        <label class="control-label">USERNAME :</label>
+                        <input class="form-control" name="USERNAME" value="@ViewBag.Data.USERNAME" />
+
+                    </div>
+
+
+                    <div class="form-group d-none">
+                        <label class="control-label">EMAIL :</label>
+                        <input class="form-control" name="EMAIL" value="@ViewBag.Data.EMAIL" />
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">PASSWORD :</label>
+                        <input class="form-control" name="PASSWORD" value="" required/>
+
+                    </div>
+                }
+                
+
+                <div class="form-group my-2">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="module">
+    import KanbanAPI from "../../js/Kanban/api/KanbanApi.js";
+    $("#UserChangePas").on("submit", async function (event) {
+        var data = {};
+        //data["Id"] = 0;
+        $('#UserChangePas').serializeArray().map(function (x) { data[x.name] = x.value; });
+        data["ID"] = parseInt(data["ID"]);
+        console.log(data);
+
+        KanbanAPI.Methode("POST", "User/ChangePassword", data, function (d) {
+            console.log(d);
+            if (d.result == 200) {
+                document.getElementById("UserChangePas").reset();
+                Swal.fire(
+                    'Success!',
+                    d.message,
+                    'success'
+                );
+                $('#ModalData').modal('hide');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: d.result,
+                    text: d.message,
+                });
+            }
+        });
+        event.preventDefault();
+
+    });
+</script>

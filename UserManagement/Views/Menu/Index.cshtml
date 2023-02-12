@@ -1,0 +1,209 @@
+﻿
+
+@{ ViewData["Title"] = "Index"; }
+<div class="py-4">
+    <div class="row">
+        <div class="col">
+            <p class="my-2">
+                @*<a asp-action="Create">Create New</a>*@
+                <button id="CreateMenuBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalData"> <i class="fas fa-plus"></i> Create</button>
+            </p>
+
+
+            <table class="table table-striped " id="tMenu">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Group</th>
+                        <th scope="col">View</th>
+                        <th scope="col">Controller</th>
+                        <th scope="col">Icon</th>
+                        <th scope="col">Order</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts
+{
+
+    <script type="module">
+        import KanbanAPI from "../../js/Kanban/api/KanbanApi.js";
+        function confirmDelete(IdDataTable, ControllerName, IdData = null) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will not be able to recover this!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+            }).then(result => {
+                if (result.dismiss) {
+                    Swal.fire("Cancelled", "Your imaginary file is safe :)", "error");
+                }
+                if (result.value) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: `/${ControllerName}/DeleteEntity`,
+                        data: {
+                            id: IdData
+                        },
+                        success: function (d) {
+                            $(`#${IdDataTable}`).DataTable().ajax.reload();
+                            if (d > 0) Swal.fire("Done!", "It was succesfully deleted!", "success");
+                            else Swal.fire("Error deleting!", "Please try again", "error");
+                            
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            Swal.fire("Error deleting!", "Please try again", "error");
+                        }
+                    });
+
+                }
+            });
+        };
+        $(document).ready(function () {
+
+            var menuTable =$('#tMenu').DataTable({
+
+                dom: "<'row'<'col'l><'col'B><'col'f>>"
+                    + "<'row'<'col-sm-12'tr>>"
+                    + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+                //dom: 'lBfrtip'
+                ,
+                buttons: [
+
+                    {
+                        extend: 'excelHtml5',
+                        name: 'excel',
+                        title: 'Menu',
+                        sheetName: 'Menu',
+                        text: '<i class="fas fa-file-excel"></i>',
+                        className: 'btn-primary',
+                        filename: 'DataMenu',
+                        autoFilter: true,
+                        exportOptions: {
+                            columns: [0, 1,2,3,4,5]
+                        }
+                    }
+                ],
+                "ajax": {
+                    type: 'GET',
+                    url: `@Url.Action("GetAll", "Menu")`,
+                    dataSrc: "",
+                    dataType: "JSON"
+                },
+                "columns": [
+                    {
+                        "data": null,
+                        "render": function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    { "data": "MENU_NAME" },
+                    { "data": "GROUP" },
+                    { "data": "MENU_VIEW" },
+                    { "data": "MENU_CONTROLLER" },
+                    { "data": "MENU_ICON" },
+                    { "data": "MENU_ORDER" },
+                    {
+                        "data": "",
+                        "render": function (data, type, row) {
+                            return `
+                        <button id="Edit" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalData" >Edit</button>
+                        <button id="Delete" type="button" class="btn btn-primary">Delete</button>
+                    `;
+                        }
+                    }
+                ]
+            });
+
+
+            // Example starter JavaScript for disabling form submissions if there are invalid fields
+            (function () {
+                'use strict'
+
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.querySelectorAll('.needs-validation')
+                //$("#contact-form").validator();
+                // Loop over them and prevent submission
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                swal(
+                                    'Error!',
+                                    'You clicked the <b style="color:red;">error</b> button!',
+                                    'error'
+                                )
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+                $("#contact-form").on("submit", function (e) {
+                    // if the validator does not prevent form submit
+                    if (!e.isDefaultPrevented()) {
+                        swal(
+                            'Success',
+                            'You clicked the <b style="color:green;">Success</b> button!',
+                            'success'
+                        )
+                    }
+                });
+            })();
+            $('#tMenu tbody').on('click', 'button#Edit', function () {
+                var data = menuTable.row($(this).parents('tr')).data();
+                CRUD(data.ID);
+            });
+            $('#tMenu tbody').on('click', 'button#Delete', function () {
+                var data = menuTable.row($(this).parents('tr')).data();
+                confirmDelete('tMenu', 'Menu', data.ID);
+            });
+        });
+       
+        $("#CreateMenuBtn").on("click", function (e) {
+            
+            CRUD(null);
+        });
+        function CRUD(ID) {
+            var data = {};
+            data["ID"] = ID;
+            $.ajax({
+                type: `GET`,
+                url: `/Menu/ModalCRUD`,
+                data: (ID == null || ID == 0) ? null : data,
+                beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+                    $('#loader').removeClass('hidden')
+                },
+                success: function (resp) {
+                    console.log(resp);
+                    $("#ModalTitle").text((ID == null || ID == 0) ?"Create Menu":"Update Menu");
+                    $("#ModalBody").html(resp);
+
+                },
+                complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+                    setTimeout(function () { $('#loader').addClass('hidden') }, 300)
+                },
+            }).fail((error) => {
+                console.log(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: error.status,
+                    text: error.statusText,
+                });
+            });
+        }
+
+    </script>
+}

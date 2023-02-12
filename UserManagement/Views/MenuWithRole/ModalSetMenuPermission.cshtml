@@ -1,0 +1,159 @@
+﻿@{
+    Layout = null;
+}
+<div class="addselection">
+    <div class="row">
+        <div class="col">
+            <input id="RoleID" type="hidden" name="ID" value="@ViewBag.DataRoleID" />
+            <table class="table table-striped " id="tSetMenuPermission" >
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">MENU_NAME</th>
+                        <th scope="col">MENU_CONTROLLER</th>
+                        <th scope="col">MENU_VIEW</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-grid gap-2">
+            <button id="SavePermission" class="btn btn-primary" type="button">Save Permission</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    
+    import KanbanAPI from "../../js/Kanban/api/KanbanApi.js";
+    const RoleID = document.getElementById('RoleID').value;
+    
+    $(document).ready(function () {
+        var menuTable = $('#tSetMenuPermission').DataTable({
+            "autoWidth": true,
+            dom: "<'row'<'col'l><'col'B><'col'f>>"
+                + "<'row'<'col-sm-12'tr>>"
+                + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+            //dom: 'lBfrtip'
+            ,
+            buttons: [
+
+                {
+                    extend: 'excelHtml5',
+                    name: 'excel',
+                    title: 'MenuWithRole',
+                    sheetName: 'MenuWithRole',
+                    text: '<i class="fas fa-file-excel"></i>',
+                    className: 'btn-primary',
+                    filename: 'DataMenu',
+                    autoFilter: true,
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
+                }
+            ],
+            "ajax": {
+                type: 'GET',
+                url: `@Url.Action("GetMenuWithRoleID", "MenuWithRole")`,
+                data: { "ID": RoleID},
+                dataSrc: "",
+                dataType: "JSON"
+            },
+            "columns": [
+                {
+                    "data": null,
+                    "render": function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                { "data": "MENU_NAME" },
+                { "data": "MENU_CONTROLLER" },
+                { "data": "MENU_VIEW" },
+                {
+                    "data": "",
+                    "render": function (data, type, row) {
+                        if(row.MENU_CHECKED)
+                        return `
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheck" checked>
+                    `;
+                        else return `
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheck">
+                    `;
+                    }
+                }
+            ]
+        });
+
+
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+            //$("#contact-form").validator();
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            swal(
+                                'Error!',
+                                'You clicked the <b style="color:red;">error</b> button!',
+                                'error'
+                            )
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+            $("#contact-form").on("submit", function (e) {
+                // if the validator does not prevent form submit
+                if (!e.isDefaultPrevented()) {
+                    swal(
+                        'Success',
+                        'You clicked the <b style="color:green;">Success</b> button!',
+                        'success'
+                    )
+                }
+            });
+        })();
+        $('#tSetMenuPermission tbody').on('change', 'input#flexSwitchCheck', function () {
+            console.log(this.checked);
+            var data = menuTable.row($(this).parents('tr')).data();
+            data.MENU_CHECKED = this.checked;
+            console.log(menuTable.rows().data().toArray())
+            //confirmDelete('tSetMenuPermission', 'Role', data.ID);
+        });
+        $("#SavePermission").on("click", async function (event) {
+            var newdata = {
+                "RoleID": RoleID,
+                "menus": menuTable.rows().data().toArray()
+            };
+            KanbanAPI.Methode("POST", "MenuWithRole/SetMenuPermission", newdata, function (d) {
+                console.log(d);
+                if (d >= 0) {
+                    Swal.fire(
+                        'Success!',
+                        d.message,
+                        'success'
+                    );
+                    $('#ModalDataXL').modal('hide');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: d.result,
+                        text: d.message,
+                    });
+                }
+            });
+            event.preventDefault();
+
+        });
+    });
+</script>

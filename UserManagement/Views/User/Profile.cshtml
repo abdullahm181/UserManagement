@@ -1,0 +1,288 @@
+﻿<style>
+    .avatar-upload {
+        position: relative;
+        max-width: 205px;
+        margin: 50px auto;
+    }
+
+        .avatar-upload .avatar-edit {
+            position: absolute;
+            right: 12px;
+            z-index: 1;
+            top: 10px;
+        }
+
+            .avatar-upload .avatar-edit input {
+                display: none;
+            }
+
+                .avatar-upload .avatar-edit input + label {
+                    display: inline-block;
+                    width: 34px;
+                    height: 34px;
+                    margin-bottom: 0;
+                    border-radius: 100%;
+                    background: #FFFFFF;
+                    border: 1px solid transparent;
+                    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+                    cursor: pointer;
+                    font-weight: normal;
+                    transition: all 0.2s ease-in-out;
+                }
+
+                    .avatar-upload .avatar-edit input + label:hover {
+                        background: #f1f1f1;
+                        border-color: #d6d6d6;
+                    }
+
+                    .avatar-upload .avatar-edit input + label:after {
+                        content: "\f044";
+                        font-family: 'Font Awesome 5 Free';
+                        color: #757575;
+                        position: absolute;
+                        top: 5px;
+                        left: 0;
+                        right: 0;
+                        text-align: center;
+                        margin: auto;
+                    }
+
+        .avatar-upload .avatar-preview {
+            width: 192px;
+            height: 192px;
+            position: relative;
+            border-radius: 100%;
+            border: 6px solid #F8F8F8;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+        }
+
+            .avatar-upload .avatar-preview > div {
+                width: 100%;
+                height: 100%;
+                border-radius: 100%;
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+</style>
+<div class="container ps-0 pt-4 pe-0">
+    <div class="row">
+        <div class="col">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <div class="d-flex flex-column align-items-center text-center">
+                        <div class="avatar-upload">
+                            <div class="avatar-edit">
+                                <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
+                                <label for="imageUpload"></label>
+                            </div>
+                            <div class="avatar-preview">
+                                @if (@ViewBag.DataUserFoto != null)
+                                {
+                                <div id="imagePreview" style="background-image: url('@Url.Action("GetUserImageFile", "User",new { Id = ViewBag.DataUser.ID })');">
+                                </div>
+                                }
+                                else
+                                {
+                                    <div id="imagePreview" style="background-image: url('../../Image/blankImage.jpg');">
+                                    </div>
+                                }
+                                
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Username</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 id="profilUsername" class="pe-2 m-0 my-auto" style="letter-spacing: 2px;">@ViewBag.DataUser.USERNAME</h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Full Name</p>
+
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 id="profilFullname" class="pe-2 m-0 my-auto" style="text-transform: uppercase; letter-spacing: 2px;">
+                                @ViewBag.DataUser.NAMA_USER
+                            </h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Phone Number</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 id="profilPhonenumber" class="pe-2 m-0 my-auto" style="text-transform: uppercase; letter-spacing: 2px;">
+                                @ViewBag.DataUser.NO_HP
+                            </h4>
+                        </div>
+                    </div>
+                    <hr>
+                    @*<div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Hire Date</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 id="profilHiredate" class="pe-2 m-0 my-auto" style="text-transform: uppercase; letter-spacing: 2px;"></h4>
+                        </div>
+                    </div>
+                    <hr>*@
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Email</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 id="profilEmail" class="pe-2 m-0 my-auto" style="text-transform: uppercase; letter-spacing: 2px;">
+                                @ViewBag.DataUser.EMAIL
+                            </h4>
+                        </div>
+                    </div>
+                    <hr>
+                    @*<div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Salary</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 id="profilSalary" class="pe-2 m-0 my-auto" style="text-transform: uppercase; letter-spacing: 2px;"></h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Job</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 id="profilJob" class="pe-2 m-0 my-auto" style="text-transform: uppercase; letter-spacing: 2px;"></h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Department</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 id="profilDepartment" class="pe-2 m-0 my-auto" style="text-transform: uppercase; letter-spacing: 2px;"></h4>
+                        </div>
+                    </div>*@
+                    <hr>
+                    <div class="hstack gap-3 align-items-center justify-content-center">
+                        <button id="accountEdit" type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ModalData">Edit Account</button>
+                        <div class="vr"></div>
+                        <button id="ChangePWProfile" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#ModalData">Change Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{ 
+    <script>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                $('#imagePreview').hide();
+                $('#imagePreview').fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $("#imageUpload").change(function () {
+        var root = this;
+
+        var input = document.getElementById("imageUpload");
+        var files = input.files;
+        var formData = new FormData();
+
+
+        if (files.length > 0) {
+            for (var i = 0; i != files.length; i++) {
+                formData.append("files", files[i]);
+            };
+            $.ajax({
+                url: "@Url.Action("UploadFiles","User")",
+                type: "POST",
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (result) {
+                    console.log(result);
+                    if (result>0) {
+                        readURL(root);
+                    }
+                },
+                async: false
+            });
+        }
+    });
+    $("#accountEdit").on("click", async function (event) {
+        var data = {};
+            data["ID"] = @ViewBag.DataUser.ID
+            $.ajax({
+                type: `GET`,
+                url: `/User/ModalEditFullUser`,
+                data:  data,
+                beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+                    $('#loader').removeClass('hidden')
+                },
+                success: function (resp) {
+                    console.log(resp);
+                    $("#ModalTitle").text("Update User");
+                    $("#ModalBody").html(resp);
+
+                },
+                complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+                    setTimeout(function () { $('#loader').addClass('hidden') }, 300)
+                },
+            }).fail((error) => {
+                console.log(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: error.status,
+                    text: error.statusText,
+                });
+            });
+        event.preventDefault();
+
+    });
+        $("#ChangePWProfile").on("click", async function (event) {
+        var data = {};
+            data["ID"] = @ViewBag.DataUser.ID
+            $.ajax({
+                type: `GET`,
+                url: `/User/ModalChangePW`,
+                data:  data,
+                beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+                    $('#loader').removeClass('hidden')
+                },
+                success: function (resp) {
+                    console.log(resp);
+                    $("#ModalTitle").text("Change Password");
+                    $("#ModalBody").html(resp);
+
+                },
+                complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+                    setTimeout(function () { $('#loader').addClass('hidden') }, 300)
+                },
+            }).fail((error) => {
+                console.log(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: error.status,
+                    text: error.statusText,
+                });
+            });
+        event.preventDefault();
+
+    });
+    </script>
+}
